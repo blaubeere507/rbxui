@@ -276,8 +276,7 @@ function RbxUI:CreateWindow(config)
     -- ── Sidebar ─────────────────────────────────
     -- FIX: sidebar spans full height below topbar, user card is at BOTTOM
     local AVATAR_H  = 72
-    local BRAND_H   = 38
-    local BOTTOM_H  = AVATAR_H + BRAND_H  -- total bottom reserved space
+    local BOTTOM_H  = AVATAR_H
 
     local Sidebar = Create("Frame", {
         Name             = "Sidebar",
@@ -336,11 +335,11 @@ function RbxUI:CreateWindow(config)
 
     local userId = LocalPlayer.UserId
     local AvatarImg = Create("ImageLabel", {
-        Size             = UDim2.new(0, 32, 0, 32),
-        Position         = UDim2.new(0, 12, 0.5, -16),
-        BackgroundColor3 = Theme.Border,
-        Image            = "rbxthumb:type=AvatarHeadShot&id=" .. userId .. "&w=48&h=48",
-        Parent           = AvatarArea,
+        Size                   = UDim2.new(0, 32, 0, 32),
+        Position               = UDim2.new(0, 12, 0.5, -16),
+        BackgroundTransparency = 1,  -- was BackgroundColor3 = Theme.Border
+        Image                  = "rbxthumb:type=AvatarHeadShot&id=" .. userId .. "&w=48&h=48",
+        Parent                 = AvatarArea,
     })
     Corner(99, AvatarImg)
 
@@ -382,16 +381,6 @@ function RbxUI:CreateWindow(config)
         BackgroundColor3 = Theme.Border,
         Parent           = Branding,
     })
-    Create("TextLabel", {
-        Size                  = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Text                  = "ROBLOX",
-        TextColor3            = Theme.TextMuted,
-        Font                  = Theme.FontBold,
-        TextSize              = 11,
-        Parent                = Branding,
-    })
-
     -- ── Content Area ────────────────────────────
     local ContentArea = Create("Frame", {
         Name                 = "ContentArea",
