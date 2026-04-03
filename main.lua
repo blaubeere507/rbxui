@@ -335,11 +335,11 @@ function RbxUI:CreateWindow(config)
 
     local userId = LocalPlayer.UserId
     local AvatarImg = Create("ImageLabel", {
-        Size                   = UDim2.new(0, 32, 0, 32),
-        Position               = UDim2.new(0, 12, 0.5, -16),
-        BackgroundTransparency = 1,  -- was BackgroundColor3 = Theme.Border
-        Image                  = "rbxthumb:type=AvatarHeadShot&id=" .. userId .. "&w=48&h=48",
-        Parent                 = AvatarArea,
+        Size             = UDim2.new(0, 32, 0, 32),
+        Position         = UDim2.new(0, 12, 0.5, -16),
+        BackgroundColor3 = Theme.Border,
+        Image            = "rbxthumb:type=AvatarHeadShot&id=" .. userId .. "&w=48&h=48",
+        Parent           = AvatarArea,
     })
     Corner(99, AvatarImg)
 
