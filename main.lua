@@ -273,7 +273,7 @@ function RbxUI:CreateWindow(config)
 
     MakeDraggable(TopBar, Main)
 
-    -- ── Sidebar ─────────────────────────────────
+    -- ── Sidebar ─────────────────────────────────__
     -- FIX: sidebar spans full height below topbar, user card is at BOTTOM
     local AVATAR_H  = 72
     local BOTTOM_H  = AVATAR_H
