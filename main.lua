@@ -368,19 +368,6 @@ function RbxUI:CreateWindow(config)
         Parent                = AvatarArea,
     })
 
-    -- ── Bottom Branding ──────────────────────────
-    local Branding = Create("Frame", {
-        Size             = UDim2.new(1, 0, 0, BRAND_H),
-        Position         = UDim2.new(0, 0, 1, -BRAND_H),
-        BackgroundColor3 = Theme.SidebarBG,
-        BorderSizePixel  = 0,
-        Parent           = Sidebar,
-    })
-    Create("Frame", {
-        Size             = UDim2.new(1, 0, 0, 1),
-        BackgroundColor3 = Theme.Border,
-        Parent           = Branding,
-    })
     -- ── Content Area ────────────────────────────
     local ContentArea = Create("Frame", {
         Name                 = "ContentArea",
