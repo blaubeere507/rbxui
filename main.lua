@@ -273,9 +273,9 @@ function RbxUI:CreateWindow(config)
 
     MakeDraggable(TopBar, Main)
 
-    -- ── Sidebar ─────────────────────────────────__
+    -- ── Sidebar ─────────────────────────────────
     -- FIX: sidebar spans full height below topbar, user card is at BOTTOM
-    local AVATAR_H  = 72
+    local AVATAR_H = 72
     local BOTTOM_H  = AVATAR_H
 
     local Sidebar = Create("Frame", {
@@ -330,7 +330,7 @@ function RbxUI:CreateWindow(config)
         Size             = UDim2.new(1, 0, 0, 1),
         Position         = UDim2.new(0, 0, 0, 0),
         BackgroundColor3 = Theme.Border,
-        Parent           = AvatarArea,
+        Parent          local AVATAR_H = AvatarArea,
     })
 
     local userId = LocalPlayer.UserId
