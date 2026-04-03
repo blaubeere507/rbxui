@@ -389,7 +389,6 @@ function RbxUI:CreateWindow(config)
         TextColor3            = Theme.TextMuted,
         Font                  = Theme.FontBold,
         TextSize              = 11,
-        LetterSpacing         = 4,
         Parent                = Branding,
     })
 
@@ -535,7 +534,6 @@ function RbxUI:CreateWindow(config)
                 TextColor3            = Theme.TextMuted,
                 Font                  = Theme.FontBold,
                 TextSize              = 10,
-                LetterSpacing         = 3,
                 TextXAlignment        = Enum.TextXAlignment.Left,
                 LayoutOrder           = -999,
                 Parent                = Section,
