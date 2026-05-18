@@ -13,16 +13,38 @@ local TweenService    = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui   = LocalPlayer:WaitForChild("PlayerGui")
 
--- // Theme
-local Theme = {
-    Background    = Color3.fromRGB(204, 204, 204), -- #cccccc
-    TabBar        = Color3.fromRGB(192, 192, 192), -- slightly darker bar
-    TabText       = Color3.fromRGB(100, 100, 100), -- inactive tab text
-    TabTextActive = Color3.fromRGB(30,  30,  30),  -- active tab text
-    Underline     = Color3.fromRGB(50,  50,  50),  -- active tab underline
-    TitleText     = Color3.fromRGB(30,  30,  30),
-    ContentBg     = Color3.fromRGB(210, 210, 210),
+-- // Themes
+local Themes = {
+    Light = {
+        Background    = Color3.fromRGB(204, 204, 204),
+        TabBar        = Color3.fromRGB(192, 192, 192),
+        TabText       = Color3.fromRGB(100, 100, 100),
+        TabTextActive = Color3.fromRGB(30,  30,  30),
+        Underline     = Color3.fromRGB(50,  50,  50),
+        TitleText     = Color3.fromRGB(30,  30,  30),
+        ContentBg     = Color3.fromRGB(210, 210, 210),
+        ToggleBg      = Color3.fromRGB(180, 180, 180),
+        ToggleOn      = Color3.fromRGB(80,  80,  80),
+        ToggleKnob    = Color3.fromRGB(255, 255, 255),
+        ItemLabel     = Color3.fromRGB(40,  40,  40),
+    },
+    Dark = {
+        Background    = Color3.fromRGB(30,  30,  30),
+        TabBar        = Color3.fromRGB(24,  24,  24),
+        TabText       = Color3.fromRGB(130, 130, 130),
+        TabTextActive = Color3.fromRGB(220, 220, 220),
+        Underline     = Color3.fromRGB(200, 200, 200),
+        TitleText     = Color3.fromRGB(220, 220, 220),
+        ContentBg     = Color3.fromRGB(36,  36,  36),
+        ToggleBg      = Color3.fromRGB(60,  60,  60),
+        ToggleOn      = Color3.fromRGB(180, 180, 180),
+        ToggleKnob    = Color3.fromRGB(220, 220, 220),
+        ItemLabel     = Color3.fromRGB(210, 210, 210),
+    },
 }
+
+local Theme = Themes.Light -- active theme (starts light)
+local IsDark = false
 
 -- // Utility: make a draggable frame
 local function MakeDraggable(frame, handle)
@@ -55,7 +77,22 @@ local function MakeDraggable(frame, handle)
     end)
 end
 
--- // Window
+-- // Theme registry: all themed elements across all windows
+local ThemedElements = {}
+
+local function RegisterThemed(element, property, themeKey)
+    table.insert(ThemedElements, { element = element, property = property, themeKey = themeKey })
+end
+
+local function ApplyTheme(newTheme)
+    Theme = newTheme
+    for _, entry in ipairs(ThemedElements) do
+        if entry.element and entry.element.Parent then
+            entry.element[entry.property] = Theme[entry.themeKey]
+        end
+    end
+end
+
 function UILib:CreateWindow(config)
     config = config or {}
     local title = config.Title or "UILib"
@@ -112,6 +149,14 @@ function UILib:CreateWindow(config)
     titleLabel.Font               = Enum.Font.GothamBold
     titleLabel.TextXAlignment     = Enum.TextXAlignment.Left
     titleLabel.Parent             = titleBar
+
+    -- Register elements for live theme switching
+    RegisterThemed(window,       "BackgroundColor3", "Background")
+    RegisterThemed(titleBar,     "BackgroundColor3", "TabBar")
+    RegisterThemed(titleBarPatch,"BackgroundColor3", "TabBar")
+    RegisterThemed(titleLabel,   "TextColor3",       "TitleText")
+    RegisterThemed(tabBar,       "BackgroundColor3", "TabBar")
+    RegisterThemed(contentArea,  "BackgroundColor3", "ContentBg")
 
     -- Make draggable via the title bar
     MakeDraggable(window, titleBar)
@@ -219,6 +264,10 @@ function UILib:CreateWindow(config)
             _itemCount = 0,
         }
 
+        -- Register for theming
+        RegisterThemed(tabBtn,    "TextColor3", "TabText")
+        RegisterThemed(underline, "BackgroundColor3", "Underline")
+
         -- Tab click: switch active tab
         tabBtn.MouseButton1Click:Connect(function()
             windowObj:_SetActiveTab(tabObj)
@@ -250,6 +299,92 @@ function UILib:CreateWindow(config)
         tabObj._btn.Font          = Enum.Font.GothamBold
         self._activeTab           = tabObj
     end
+
+    -- // Built-in Settings tab (always last)
+    local settingsTab = windowObj:AddTab("Settings")
+
+    -- Dark mode toggle row
+    local row = Instance.new("Frame")
+    row.Size             = UDim2.new(1, 0, 0, 36)
+    row.BackgroundTransparency = 1
+    row.BorderSizePixel  = 0
+    row.LayoutOrder      = 1
+    row.Parent           = settingsTab._page
+
+    local rowLabel = Instance.new("TextLabel")
+    rowLabel.Text      = "Dark Mode"
+    rowLabel.Size      = UDim2.new(1, -60, 1, 0)
+    rowLabel.Position  = UDim2.new(0, 0, 0, 0)
+    rowLabel.BackgroundTransparency = 1
+    rowLabel.TextColor3 = Theme.ItemLabel
+    rowLabel.TextSize   = 13
+    rowLabel.Font       = Enum.Font.Gotham
+    rowLabel.TextXAlignment = Enum.TextXAlignment.Left
+    rowLabel.Parent    = row
+    RegisterThemed(rowLabel, "TextColor3", "ItemLabel")
+
+    -- Toggle pill
+    local toggleBg = Instance.new("Frame")
+    toggleBg.Size             = UDim2.new(0, 40, 0, 20)
+    toggleBg.Position         = UDim2.new(1, -44, 0.5, -10)
+    toggleBg.BackgroundColor3 = Theme.ToggleBg
+    toggleBg.BorderSizePixel  = 0
+    toggleBg.Parent           = row
+    RegisterThemed(toggleBg, "BackgroundColor3", "ToggleBg")
+
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(1, 0)
+    toggleCorner.Parent = toggleBg
+
+    local knob = Instance.new("Frame")
+    knob.Size             = UDim2.new(0, 14, 0, 14)
+    knob.Position         = UDim2.new(0, 3, 0.5, -7)
+    knob.BackgroundColor3 = Theme.ToggleKnob
+    knob.BorderSizePixel  = 0
+    knob.Parent           = toggleBg
+    RegisterThemed(knob, "BackgroundColor3", "ToggleKnob")
+
+    local knobCorner = Instance.new("UICorner")
+    knobCorner.CornerRadius = UDim.new(1, 0)
+    knobCorner.Parent = knob
+
+    -- Clickable overlay on toggle
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size             = UDim2.new(1, 0, 1, 0)
+    toggleBtn.BackgroundTransparency = 1
+    toggleBtn.Text             = ""
+    toggleBtn.Parent           = toggleBg
+
+    toggleBtn.MouseButton1Click:Connect(function()
+        IsDark = not IsDark
+        local newTheme = IsDark and Themes.Dark or Themes.Light
+        ApplyTheme(newTheme)
+
+        -- Animate knob
+        local targetPos = IsDark
+            and UDim2.new(1, -17, 0.5, -7)
+            or  UDim2.new(0, 3,   0.5, -7)
+        TweenService:Create(knob, TweenInfo.new(0.15), { Position = targetPos }):Play()
+
+        -- Active tab text color needs manual refresh since it overrides theme
+        for _, t in ipairs(windowObj._tabs) do
+            if t == windowObj._activeTab then
+                t._btn.TextColor3 = Theme.TabTextActive
+                t._btn.Font       = Enum.Font.GothamBold
+            else
+                t._btn.TextColor3 = Theme.TabText
+                t._btn.Font       = Enum.Font.Gotham
+            end
+        end
+    end)
+
+    -- // RShift to toggle window visibility
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == Enum.KeyCode.RightShift then
+            window.Visible = not window.Visible
+        end
+    end)
 
     return windowObj
 end
